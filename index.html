@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Miner</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #000;
+            color: #fff;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        #app {
+            background-color: #181818;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            width: 90%;
+            max-width: 400px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        #username {
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        #settingsButton {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        #balance {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        #mainTab {
+            text-align: center;
+        }
+
+        #mainTab #speed {
+            font-size: 14px;
+        }
+
+        #getGPUButton {
+            background-color: #fff; /* White color */
+            color: #000;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #getGPUButton:hover {
+            background-color: #ccc;
+        }
+
+        #bottomMenu {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 10px 0;
+            background-color: #282828;
+            border-top: 1px solid #484848;
+            z-index: 2; /* Ensure menu stays on top */
+        }
+
+        #bottomMenu button {
+            background-color: #181818;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            border: 1px solid #484848;
+            transition: background-color 0.3s ease;
+        }
+
+        #bottomMenu button:hover {
+            background-color: #282828;
+        }
+
+        .active {
+            background-color: #fff;
+            border-color: #fff;
+            box-shadow: 0 0 10px #fff; /* Add a glow effect */
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #settingsPopup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #282828;
+            color: #fff;
+            border: 2px solid #fff;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            width: 90%;
+            max-width: 300px;
+        }
+
+        .popup-content {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .popup-content div {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .popup-content label {
+            margin-right: 10px;
+        }
+
+        #closeSettings {
+            background-color: #fff;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background-color 0.3s ease;
+        }
+
+        #closeSettings:hover {
+            background-color: #ccc;
+        }
+
+        /* Miners Tab Styles */
+        #minersTab {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+            font-size: 16px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #181818;
+            z-index: 1;
+            display: none; /* Hide by default */
+        }
+
+        #minersTab .minerCard {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #484848;
+            margin-bottom: 10px;
+        }
+
+        #minersTab .minerCard .minerInfo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #minersTab .minerCard .minerInfo .minerPrice {
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        #minersTab .minerCard .minerInfo .minerProfit {
+            font-size: 12px;
+        }
+
+        #minersTab .minerCard .buyButton {
+            background-color: #fff; /* White color */
+            color: #000;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #minersTab .minerCard .buyButton:hover {
+            background-color: #ccc;
+        }
+
+        /* Swap tab styles */
+        #swapTab {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+            font-size: 16px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #181818;
+            z-index: 1;
+            display: none; /* Hide by default */
+        }
+
+        #swapTab .inputField {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            width: 100%;
+        }
+
+        #swapTab .inputField input {
+            background-color: #181818;
+            color: #fff;
+            border: 1px solid #484848;
+            border-radius: 5px;
+            padding: 8px;
+            width: 100%;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        #swapTab .inputField .currencySymbol {
+            margin-left: 10px;
+            font-size: 16px;
+        }
+
+        /* Margins for all elements */
+        #app > * {
+            margin-bottom: 15px; /* Add margin between elements in #app */
+        }
+
+        #mainTab > * {
+            margin-bottom: 10px;
+        }
+
+        #minersTab > * {
+            margin-bottom: 10px;
+        }
+
+        #swapTab > * {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <header>
+            <div id="username">@username</div>
+            <button id="settingsButton">⚙️</button>
+        </header>
+        <main id="mainTab">
+            <div id="balance">Balance: $0.0000</div>
+            <div id="speed">Speed: 0.00000 $DOD/s</div>
+            <button id="getGPUButton">Get GPU</button>
+        </main>
+        <div id="minersTab" class="hidden">
+            <h2>Miners</h2>
+            <p>Upgrade your mining speed!</p>
+            <div class="scrollContainer">
+                </div>
+            <button id="scrollDownButton">Scroll Down</button>
+            <div id="bottomMenu">
+                <button id="minersTabButton">Miners</button>
+                <button id="mainTabButton">Main</button>
+                <button id="swapTabButton">Swap</button>
+            </div>
+        </div>
+        <div id="swapTab" class="hidden">
+            <h2>Swap</h2>
+            <div class="inputField">
+                <input type="number" value="10000">
+                <span class="currencySymbol">$</span>
+            </div>
+            <div class="inputField">
+                <input type="number" value="100">
+                <span class="currencySymbol">$</span>
+            </div>
+            <div id="bottomMenu">
+                <button id="minersTabButton">Miners</button>
+                <button id="mainTabButton">Main</button>
+                <button id="swapTabButton">Swap</button>
+            </div>
+        </div>
+        <div id="bottomMenu">
+            <button id="minersTabButton">Miners</button>
+            <button id="mainTabButton" class="active">Main</button>
+            <button id="swapTabButton">Swap</button>
+        </div>
+    </div>
+
+    <div id="settingsPopup" class="hidden">
+        <div class="popup-content">
+            <h3>Settings</h3>
+            <div>
+                <label for="vibrationToggle">Vibration:</label>
+                <input type="checkbox" id="vibrationToggle">
+            </div>
+            <div>
+                <label for="languageSelect">Language:</label>
+                <select id="languageSelect">
+                </select>
+            </div>
+            <button id="closeSettings">Close</button>
+        </div>
+    </div>
+
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+        // Initialize Telegram WebApp
+        Telegram.WebApp.ready();
+
+        // User details and settings (handling undefined cases)
+        let userId = 10000000; // Default ID
+        let username = "@user"; // Default username
+        let languageCode = "en"; // Default language
+
+        if (Telegram.WebApp.initDataUnsafe && Telegram.WebApp.initDataUnsafe.user) {
+            userId = Telegram.WebApp.initDataUnsafe.user.id;
+            username = Telegram.WebApp.initDataUnsafe.user.username || "@user"; 
+            languageCode = Telegram.WebApp.initDataUnsafe.user.language_code || "en";
+        }
+
+        // Global variables
+        let balance = 0; // Start balance at 0
+        let miningSpeed = 0;
+        let lastUpdate = Date.now();
+
+        // Update the balance element
+        function updateBalance() {
+            document.getElementById('balance').textContent = `Balance: $${balance.toFixed(4)}`;
+            document.getElementById('speed').textContent = `Speed: ${miningSpeed.toFixed(5)} $DOD/s`;
+        }
+
+        // Function to calculate profit based on mining speed and time
+        function calculateProfit(startTime, endTime) {
+            const seconds = (endTime - startTime) / 1000;
+            return seconds * miningSpeed;
+        }
+
+        // Load settings from local storage or Telegram WebApp cloud storage
+        async function loadSettings() {
+            try {
+                // Try loading from cloud storage
+                balance = parseFloat(await Telegram.WebApp.cloudStorage.getItem('balance'));
+                miningSpeed = parseFloat(await Telegram.WebApp.cloudStorage.getItem('miningSpeed'));
+                lastUpdate = parseFloat(await Telegram.WebApp.cloudStorage.getItem('lastUpdate'));
+                // ... load other settings
+            } catch (error) {
+                // If cloud storage fails, load from local storage
+                balance = parseFloat(localStorage.getItem('balance')) || 0;
+                miningSpeed = parseFloat(localStorage.getItem('miningSpeed')) || 0;
+                lastUpdate = parseFloat(localStorage.getItem('lastUpdate')) || Date.now();
+                // ... load other settings from local storage
+            }
+        }
+
+        // Save settings to local storage or Telegram WebApp cloud storage
+        async function saveSettings() {
+            try {
+                // Try saving to cloud storage
+                await Telegram.WebApp.cloudStorage.setItem('balance', balance);
+                await Telegram.WebApp.cloudStorage.setItem('miningSpeed', miningSpeed);
+                await Telegram.WebApp.cloudStorage.setItem('lastUpdate', lastUpdate);
+                // ... save other settings to cloud storage
+            } catch (error) {
+                // If cloud storage fails, save to local storage
+                localStorage.setItem('balance', balance);
+                localStorage.setItem('miningSpeed', miningSpeed);
+                localStorage.setItem('lastUpdate', lastUpdate);
+                // ... save other settings to local storage
+            }
+        }
+
+        // Function to handle the Get GPU button click
+        async function handleGetGPUClick() {
+            // Check if Telegram Stars payment is required
+            const price = userId === 568817655 ? 0 : 200; // Example: User ID 568817655 gets free GPU
+
+            if (price > 0) {
+                try {
+                    // Generate Telegram Stars invoice
+                    const response = await fetch('/generate-invoice', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            title: 'Get GPU',
+                            description: 'Purchase a powerful GPU for mining.',
+                            payload: '{}',
+                            currency: 'XTR',
+                            prices: [{ amount: price, label: 'GPU' }]
+                        })
+                    });
+
+                    const data = await response.json();
+                    Telegram.WebApp.startActivity({ url: data.invoiceLink });
+                } catch (error) {
+                    console.error('Error generating invoice:', error);
+                }
+            } else {
+                // If free GPU, update mining speed
+                miningSpeed = 0.00001;
+                saveSettings();
+                updateBalance();
+            }
+        }
+
+        // Function to update mining speed
+        function updateMiningSpeed(newSpeed) {
+            miningSpeed = newSpeed;
+            saveSettings();
+        }
+
+        // Function to handle user clicking on their username
+        function handleUsernameClick() {
+            // Logic to determine bonus based on username
+            let bonus = 0;
+            if (username.includes(' ')) {
+                bonus = 10;
+            } else if (username.includes('_') || username.includes('-')) {
+                bonus = 5;
+            } else if (username.match(/^[0-9]+$/)) {
+                bonus = 2;
+            }
+            // You can add more complex logic here based on username patterns
+
+            // Add bonus to balance
+            balance += bonus;
+            saveSettings();
+            updateBalance();
+        }
+
+        // Function to handle settings button click
+        function handleSettingsButtonClick() {
+            const settingsPopup = document.getElementById('settingsPopup');
+            settingsPopup.classList.remove('hidden');
+        }
+
+        // Function to close settings popup
+        function handleCloseSettingsClick() {
+            const settingsPopup = document.getElementById('settingsPopup');
+            settingsPopup.classList.add('hidden');
+        }
+
+        // Function to handle tab switching
+        function handleTabClick(tabId) {
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('#bottomMenu button');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            // Add active class to the clicked tab
+            const clickedTab = document.getElementById(tabId);
+            clickedTab.classList.add('active');
+
+            // Hide all tabs and show the selected one
+            const mainTab = document.getElementById('mainTab');
+            const minersTab = document.getElementById('minersTab');
+            const swapTab = document.getElementById('swapTab');
+            mainTab.classList.add('hidden');
+            minersTab.classList.add('hidden');
+            swapTab.classList.add('hidden');
+
+            // Show the clicked tab by removing the 'hidden' class
+            document.getElementById(tabId).classList.remove('hidden'); 
+        }
+
+        // Function to translate elements
+        async function translateElements() {
+            // ... (Implementation to translate elements using google-translate-api)
+        }
+
+        // Add event listeners for buttons
+        document.getElementById('getGPUButton').addEventListener('click', handleGetGPUClick);
+        document.getElementById('settingsButton').addEventListener('click', handleSettingsButtonClick);
+        document.getElementById('closeSettings').addEventListener('click', handleCloseSettingsClick);
+        document.getElementById('minersTabButton').addEventListener('click', () => handleTabClick('minersTab'));
+        document.getElementById('mainTabButton').addEventListener('click', () => handleTabClick('mainTab'));
+        document.getElementById('swapTabButton').addEventListener('click', () => handleTabClick('swapTab'));
+
+        // Initialize the app
+        async function initializeApp() {
+            await loadSettings(); // Load saved settings
+            updateBalance(); // Update the balance display
+            document.getElementById('username').textContent = `${username}`; // Set username
+            document.getElementById('username').addEventListener('click', handleUsernameClick);
+
+            // Start mining loop
+            setInterval(async () => {
+                // Calculate profit since last update
+                const currentTimestamp = Date.now();
+                const profit = calculateProfit(lastUpdate, currentTimestamp);
+                balance += profit;
+                lastUpdate = currentTimestamp;
+                saveSettings();
+                updateBalance();
+            }, 1000);
+
+            // Translate elements if the language is not English
+            if (languageCode !== 'en') {
+                translateElements();
+            }
+        }
+
+        initializeApp();
+    </script>
+</body>
+</html>
