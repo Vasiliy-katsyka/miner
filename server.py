@@ -3,7 +3,7 @@ from telegram import Bot, InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
 from googletrans import Translator
 
 app = Flask(__name__)
-bot = Bot(token='YOUR_BOT_TOKEN')  # Replace with your bot token
+bot = Bot(token='8148259500:AAEjvQpilZuAQ15N_3u7l_ggdbvdT-TEELo')  # Replace with your bot token
 translator = Translator()
 
 @app.route('/generate-invoice', methods=['POST'])
