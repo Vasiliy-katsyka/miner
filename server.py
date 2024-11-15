@@ -3,7 +3,7 @@ from telegram import Bot, InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
 from googletrans import Translator
 
 app = Flask(__name__)
-bot = Bot(token='8148259500:AAEjvQpilZuAQ15N_3u7l_ggdbvdT-TEELo')  # Replace with your bot token
+bot = Bot(token='YOUR_BOT_TOKEN')  # Replace with your bot token
 translator = Translator()
 
 @app.route('/generate-invoice', methods=['POST'])
@@ -28,7 +28,7 @@ def generate_invoice():
 
 @bot.message_handler(commands=['start'])
 def start(message):
-    web_app = WebAppInfo(url='https://your-app-url.com') 
+    web_app = WebAppInfo(url='https://vasiliy-katsyka.github.io/miner') 
     button = InlineKeyboardButton(text='Start Mining', web_app=web_app)
     keyboard = InlineKeyboardMarkup([[button]])
 
@@ -46,4 +46,4 @@ def translate_text():
     return jsonify({'translated_text': translation.text})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=4000, debug=True)
